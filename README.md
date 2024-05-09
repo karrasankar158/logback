@@ -1,2 +1,109 @@
 # logback
-logback
+
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!--Appender-->
+    <appender name="FILE_APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/var/log/commReader/commReader.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>/var/log/commReader/commReader.%d.%i.log</fileNamePattern>
+            <maxFileSize>2MB</maxFileSize>
+            <maxHistory>1</maxHistory>
+            <totalSizeCap>100MB</totalSizeCap>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH-mm-ss} %-5level - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--Logger-->
+    <root level="DEBUG">
+        <appender-ref ref="FILE_APPENDER" />
+    </root>
+
+</configuration>
+
+------------------------------------------------------------------------------------
+
+This XML file does not appear to have any style information associated with it. The document tree is shown below.
+<configuration debug="true" scan="true" scanPeriod="5 seconds">
+<contextName>SADK</contextName>
+<property name="logging_home" value="svsLogs"/>
+<!--  svs api log path  -->
+<property name="logging_backup" value="${logging_home}/backup"/>
+<!--  svs api logbackup path  -->
+<!--  svs api normal log  -->
+<appender name="svsNormalAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+<!--  API LOG OFF
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level>
+			<onMatch>DENY</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+		  -->
+<layout class="ch.qos.logback.classic.PatternLayout">
+<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n </pattern>
+</layout>
+<file>${logging_home}/svs-normal.log</file>
+<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+<fileNamePattern> ${logging_backup}/%d{yyyy-MM-dd}/svs-normal.%d{yyyyMMdd}.%i.log.zip </fileNamePattern>
+<maxFileSize>500MB</maxFileSize>
+<maxHistory>10</maxHistory>
+</rollingPolicy>
+</appender>
+<!--  svs api error log  -->
+<appender name="svsErrorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+<!--  API LOG OFF
+    	<filter class="ch.qos.logback.classic.filter.LevelFilter">
+    		<level>INFO</level>
+			<onMatch>DENY</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+		  -->
+<layout class="ch.qos.logback.classic.PatternLayout">
+<pattern> %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n </pattern>
+</layout>
+<file>${logging_home}/svs-error.log</file>
+<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+<fileNamePattern> ${logging_backup}/%d{yyyy-MM-dd}/svs-error.%d{yyyyMMdd}.%i.log.zip </fileNamePattern>
+<maxFileSize>500MB</maxFileSize>
+<maxHistory>10</maxHistory>
+</rollingPolicy>
+</appender>
+<appender name="normalAsyncAppender" class="ch.qos.logback.classic.AsyncAppender">
+<appender-ref ref="svsNormalAppender"/>
+</appender>
+<appender name="errorAsyncAppender" class="ch.qos.logback.classic.AsyncAppender">
+<appender-ref ref="svsErrorAppender"/>
+</appender>
+<!--  svs normal api  -->
+<logger name="systemLogger" level="info" additivity="false">
+<appender-ref ref="normalAsyncAppender"/>
+</logger>
+<!--  svs error api  -->
+<logger name="errorLogger" level="info" additivity="false">
+<appender-ref ref="errorAsyncAppender"/>
+</logger>
+</configuration>
+
+----------------------------------------------------------------------------------------------
+
+Appender:
+
+<appender name="LOGFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+<prudent>true</prudent>
+<file>/PATH/TO/LOGS/${root.log.filename}</file>
+<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+
+<fileNamePattern>/PATH/TO/LOGS/${root.log.filename}.%d{${common.log.file.date.pattern}}</fileNamePattern>
+</rollingPolicy>
+<encoder>
+<pattern>${common.log.conversionpattern}</pattern>
+</encoder>
+</appender>
+
+-------------------------------------------------------------------------------------
+
+
